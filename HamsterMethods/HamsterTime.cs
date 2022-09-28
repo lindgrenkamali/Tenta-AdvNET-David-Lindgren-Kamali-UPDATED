@@ -47,9 +47,15 @@ namespace HamsterStuff
 
         }
 
-        public static void NewDay()
+        public static void NewDay(DateTime? latestLog)
         {
+            
             var currentTime = TimeRead();
+
+            if (latestLog != null && latestLog > currentTime)
+            {
+                currentTime = (DateTime)latestLog;
+            }
 
             var time = currentTime.ToString("yyyy-MM-dd");
 

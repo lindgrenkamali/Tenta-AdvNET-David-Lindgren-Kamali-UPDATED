@@ -92,7 +92,7 @@ namespace HamsterDatabaseStructure
 
 
         //Avslutar dagen
-        public async Task<string> HamsterCheckOut(DateTime time, HamsterHandler hh, ExerciseArea eA, Hamster h)
+        public async Task<string> HamsterCheckOut(DateTime time, ExerciseArea eA, Hamster h)
         {
             ActivityLog al = new ActivityLog();
             DateTime currentTime = HamsterTime.TimeRead();
@@ -100,6 +100,7 @@ namespace HamsterDatabaseStructure
             string goingHome;
 
             var hamsterResult = al.EndOfDayResult(h, time);
+            DateTime? latestLog = null;
 
             await eA.RemoveFromExercise(time, true, h);
             using (var hdc = HamsterDbContext.CreateDb())
@@ -115,7 +116,6 @@ namespace HamsterDatabaseStructure
                 {
                     hamster.CageId = null;
                     hamster.CheckInTime = null;
-                    hamster.LatestMotion = null;
 
                     var activityLog = new ActivityLog { ActivityId = 2, HamsterId = hamster.Id, TimeStamp = time };
 
@@ -131,10 +131,10 @@ namespace HamsterDatabaseStructure
                 {
                     goingHome += hamster;
                 }
-
+                latestLog = hdc.ActivityLogs.Max(x => x.TimeStamp);
             }
-            
-            HamsterTime.NewDay();
+
+            HamsterTime.NewDay(latestLog);
             return goingHome;
         }
 
@@ -149,9 +149,10 @@ namespace HamsterDatabaseStructure
                     hamster.CageId = null;
                     hamster.ExerciseAreaId = null;
                     hamster.CheckInTime = null;
-                    hamster.LatestMotion = null;
-                    HamsterTime.NewDay();
+
                 }
+                var latestLog = hdc.ActivityLogs.Max(x => x.TimeStamp);
+                HamsterTime.NewDay(latestLog);
             }
         }
     }

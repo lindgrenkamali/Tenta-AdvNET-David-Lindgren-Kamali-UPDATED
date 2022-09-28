@@ -26,7 +26,7 @@ namespace Tenta_AdvNET_David_Lindgren_Kamali
 
             do
             {
-                Console.WriteLine("How many ticks per second?");
+                Console.WriteLine("How many ticks per second(MAX 10)?");
                 tickTrue = int.TryParse(Console.ReadLine(), out ticksPerSecond);
             } while (!tickTrue || ticksPerSecond < 0 || ticksPerSecond > 10);
 
@@ -51,6 +51,7 @@ namespace Tenta_AdvNET_David_Lindgren_Kamali
             ExerciseArea eA = new ExerciseArea();
 
             var startTime = HamsterTime.TimeRead();
+
             Console.Clear();
 
             if (startTime.Hour != 7 && startTime.Minute != 0)
@@ -108,13 +109,15 @@ namespace Tenta_AdvNET_David_Lindgren_Kamali
                 removeTemp = await eA.RemoveFromExercise(time, true, h);
                 Console.WriteLine(removeTemp);
                 Console.WriteLine($"\n----------------------\n{HamsterTime.TimeWrite(time)}");
-                
+                Console.WriteLine($"Current tick: {HamsterTime.CurrentTick(startTime)}");
+                Console.WriteLine($"{Hamster.AllTheHamsters()}");
+
             }
 
             else
             {
                 hh.StopTime();
-                Console.WriteLine(await h.HamsterCheckOut(startTime, hh, eA, h));
+                Console.WriteLine(await h.HamsterCheckOut(startTime, eA, h));
             }
 
         }
