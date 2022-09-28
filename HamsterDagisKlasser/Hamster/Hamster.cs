@@ -123,7 +123,6 @@ namespace HamsterDatabaseStructure
 
                 }
 
-                hh.StopTime();
                 goingHome = "\n----------------------\nAll hamsters going home";
 
                 await hdc.SaveChangesAsync();
@@ -132,6 +131,7 @@ namespace HamsterDatabaseStructure
                 {
                     goingHome += hamster;
                 }
+
             }
             
             HamsterTime.NewDay();

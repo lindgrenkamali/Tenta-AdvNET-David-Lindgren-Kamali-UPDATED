@@ -1,6 +1,7 @@
 ﻿using HamsterDatabaseStructure;
 using HamsterStuff;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,8 +18,6 @@ namespace Tenta_AdvNET_David_Lindgren_Kamali
             int ticksPerSecond = 0;
             bool tickTrue = false;
 
-
-
             do
             {
                 Console.WriteLine("How many days to iterate");
@@ -27,23 +26,18 @@ namespace Tenta_AdvNET_David_Lindgren_Kamali
 
             do
             {
-                Console.WriteLine("How many ticks per second? MAX 5");
+                Console.WriteLine("How many ticks per second?");
                 tickTrue = int.TryParse(Console.ReadLine(), out ticksPerSecond);
-            } while (!tickTrue || ticksPerSecond < 0 || ticksPerSecond > 5);
+            } while (!tickTrue || ticksPerSecond < 0 || ticksPerSecond > 10);
 
             for (int i = 1; i <= days; i++)
             {
                 await Task.Run(() => RunHamster(ticksPerSecond, i));
-
                 
                 Console.ReadKey();
 
             }
 
-            while (true)
-            {
-
-            }
         }
 
 
@@ -59,7 +53,7 @@ namespace Tenta_AdvNET_David_Lindgren_Kamali
             var startTime = HamsterTime.TimeRead();
             Console.Clear();
 
-            if (startTime.Hour != 7)
+            if (startTime.Hour != 7 && startTime.Minute != 0)
             {
                 Console.WriteLine("The program did not exit as usual. A force reset will now occur");
                 h.ForceReset();
@@ -75,29 +69,21 @@ namespace Tenta_AdvNET_David_Lindgren_Kamali
             Console.WriteLine(await h.HamsterCheckIn(startTime, h));
 
 
-            hh.Hamster += async (sender, e) => await HamsterDay(startTime, eA, h);
+            hh.Hamster += async (sender, e) => await HamsterDay(startTime, eA, h, hh);
 
             hh.StartTime(ticksPerSecond);
 
-
-            do
-            {
-                Thread.Sleep(200);
-
-            } while (HamsterTime.CurrentTick(startTime) < 100);
-            Console.WriteLine(await h.HamsterCheckOut(startTime, hh, eA, h));
-
         }
 
-        private static async Task HamsterDay(DateTime startTime, ExerciseArea eA, Hamster h)
+        private static async Task HamsterDay(DateTime startTime, ExerciseArea eA, Hamster h, HamsterHandler hh)
         {
             string addTemp;
             string removeTemp;
             DateTime time = HamsterTime.TimeRead();
 
-            int currentTick = HamsterTime.CurrentTick(time);
+            int currentTick = HamsterTime.CurrentTick(startTime);
 
-            if (currentTick < 100)
+            if (currentTick < 99)
             {
                   addTemp = await eA.AddToExercise(h);
                    if(addTemp != "")
@@ -107,17 +93,29 @@ namespace Tenta_AdvNET_David_Lindgren_Kamali
                     }
                     removeTemp = await eA.RemoveFromExercise(time, false, h);
 
-                    if (removeTemp != "")
+                if (removeTemp != "")
                     {
                         Console.WriteLine(removeTemp);
                     }
-                   
-                }
-                
+
                 Console.WriteLine($"\n----------------------\n{HamsterTime.TimeWrite(time)}");
                 Console.WriteLine($"Current tick: {HamsterTime.CurrentTick(startTime)}");
                 Console.WriteLine($"{Hamster.AllTheHamsters()}");
-            
+            }
+
+            else if(currentTick == 99)
+            {
+                removeTemp = await eA.RemoveFromExercise(time, true, h);
+                Console.WriteLine(removeTemp);
+                Console.WriteLine($"\n----------------------\n{HamsterTime.TimeWrite(time)}");
+                
+            }
+
+            else
+            {
+                hh.StopTime();
+                Console.WriteLine(await h.HamsterCheckOut(startTime, hh, eA, h));
+            }
 
         }
 

@@ -18,6 +18,7 @@ namespace HamsterStuff
         public void StopTime()
         {
             HamsterTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            
         }
 
         public void EventHamster(object sender, EventArgs e)
