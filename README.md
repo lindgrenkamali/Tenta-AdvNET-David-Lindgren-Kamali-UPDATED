@@ -6,8 +6,8 @@ Visual Studio
 # Code
 * C#
 * .Net
-# Entity Framework
-# LINQ
+* Entity Framework
+* LINQ
 
 # Tables
 * Hamster
